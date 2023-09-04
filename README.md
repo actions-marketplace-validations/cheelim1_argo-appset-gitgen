@@ -26,3 +26,6 @@ imageTag: <Commonly pointing to the image store in your container registry>
 kustomizePath: kustomize/template-api/dev
 namespace: <Namespace where your application will be deployed in the K8s cluster>
 ```
+
+#### Icons Reference:
+- https://github.com/haya14busa/github-action-brandings
