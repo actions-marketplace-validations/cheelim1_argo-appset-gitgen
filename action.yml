@@ -1,5 +1,5 @@
 name: 'ArgoCD ApplicationSet Git File Gen'
-description: 'Generate a YAML file in a specified repository for ArgoCD ApplicationSet Git File Generator to create the Child Argo Applications.'
+description: 'Generate a YAML file for ArgoCD AppSet Git File Generator.'
 branding:
   icon: 'box'
   color: 'blue'
