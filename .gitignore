@@ -1,0 +1,6 @@
+secrets
+
+# Ignore specific files
+.DS_Store
+.env
+.git

@@ -1,0 +1,74 @@
+name: build-docker-image
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - published
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      # Compile Go code to create the binary
+      - name: Compile Go code
+        run: GOOS=linux GOARCH=amd64 go build -o image-updater main.go
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          logout: false
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}
+
+      - id: image-tag
+        name: Set image tag
+        run: |
+          echo "image-tag=$(echo ${{ github.sha }} | cut -c 1-7 )" >> $GITHUB_ENV
+
+      - if: github.ref == 'refs/heads/main'
+        name: Build image (edge)
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile  # Ensure you have the correct path to Dockerfile if it's not in the root
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.image-tag }}
+            ${{ env.REGISTRY }}/${{ github.repository }}:latest
+
+      - if: github.event_name == 'release' && github.event.action == 'published'
+        name: Build image (stable)
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile  # Ensure you have the correct path to Dockerfile if it's not in the root
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}

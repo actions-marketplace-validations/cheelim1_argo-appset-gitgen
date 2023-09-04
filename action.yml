@@ -1,0 +1,31 @@
+name: 'ArgoCD ApplicationSet Git File Gen'
+description: 'Generate a YAML file in a specified repository for ArgoCD ApplicationSet Git File Generator to create the Child Argo Applications.'
+branding:
+  icon: 'box'
+  color: 'blue'
+inputs:
+  kustomize_path:
+    description: 'The path for kustomize. E.g. kustomize/some-path/dev'
+    required: true
+  target_repo:
+    description: 'Target repository to create YAML in. Format: owner/repo'
+    required: true
+  file_path:
+    description: 'Path in the target repo to place the YAML file.'
+    required: true
+  image_base:
+    description: 'Base URL for the image (e.g., 111111.dkr.ecr.us-east-1.amazonaws.com/ml/).'
+    required: true
+  namespace:
+    description: 'Namespace for the YAML. Defaults to invoking repository name.'
+    required: false
+  IMAGE_TAG:
+    description: 'The new image tag'
+    required: false
+  GITHUB_TOKEN:
+    description: 'GitHub Token or Personal Access Token with permissions.'
+    required: true
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
