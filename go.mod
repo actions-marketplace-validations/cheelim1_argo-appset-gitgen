@@ -1,6 +1,6 @@
 module github.com/cheelim1/argo-appset-gitgen
 
-go 1.21.0
+go 1.23.0
 
 require (
 	github.com/google/go-github/v38 v38.1.0
